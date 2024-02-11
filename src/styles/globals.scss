@@ -1,0 +1,77 @@
+body,
+html {
+	height: 100%;
+	overflow: hidden; /* Prevents scrolling on the whole page */
+	margin: 0; /* Removes default margin */
+}
+
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities;
+
+:root {
+	--input-status-border: 3px;
+
+	--input-success-color: #00c853;
+	--input-error-color: #ef5350;
+
+	--medium-blue: #121d2e;
+	--medium-blue-2: #0b3a67;
+	--medium-blue-3: #082c4f;
+	--deep-blue: #041322;
+	--deep-blue-2: #041525;
+	--light-blue: #1d2e3e;
+	--light-blue-2: #12223a;
+
+	--link-color: #0ea5e9;
+
+	--text-color-dark: #3f3f46;
+	--accent-color: #ffc107;
+}
+
+body {
+	/* background-color: var(--medium-blue); */
+	background-color: transparent !important;
+}
+
+* {
+	// Scrollbar background color
+	// scrollbar-color: var(--light-blue-2) var(--medium-blue-2);
+	// Scrollbar width
+	// scrollbar-width: thin;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: #e5e5e5;
+	-webkit-box-shadow: 0 0 0 1000px var(--light-blue-2) inset;
+	box-shadow: 0 0 0 1000px var(--light-blue-2) inset;
+	caret-color: #e5e5e5;
+	color: #e5e5e5;
+}
+
+//input[data-com-onepassword-filled="dark"].input-field,
+//select[data-com-onepassword-filled="dark"].input-field,
+//textarea[data-com-onepassword-filled="dark"].input-field {
+//  background-color: var(--light-blue-2) !important;
+//}
+//
+//input[data-com-onepassword-filled="dark"],
+//select[data-com-onepassword-filled="dark"],
+//textarea[data-com-onepassword-filled="dark"] {
+//  background-color: red !important;
+//}
+
+@media (prefers-color-scheme: dark) {
+	html {
+		color-scheme: dark;
+	}
+}

@@ -6,6 +6,57 @@
 	z-index: -1; /* Ensures it stays behind content */
 }
 
+.blurBackground {
+	display: block;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	background: rgba(255, 255, 255, 0);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.upload-ctn {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+
+	gap: 10px;
+}
+
+.upload {
+	all: unset;
+
+	width: 100%;
+	height: 97px;
+
+	font-family: "Ubuntu", sans-serif;
+	font-size: 16px;
+
+	border-radius: 16px;
+	border: 2.5px dashed var(--light-blue-2);
+	color: #ccc;
+	padding: 25px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+
+	transition: all 0.25s;
+}
+
+.file-input {
+	display: none;
+}
+
 .scrollableContent {
 	position: absolute; /* Positioning relative to the viewport */
 	top: 0;
@@ -78,6 +129,7 @@
 	display: inline-block;
 	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 	position: relative;
+	text-align: center;
 }
 
 .dot {
@@ -98,4 +150,56 @@
 	border: 1px solid black;
 	border-radius: 1px;
 	padding: -20px;
+}
+
+.polaroidDetails {
+	z-index: 103;
+	position: "absolute";
+	color: black;
+	background-color: white;
+	justify-content: center;
+	align-content: center;
+}
+
+.upload:hover:not([disabled], .disabled) {
+	border: 2px dashed var(--medium-blue-2);
+	color: #fff;
+}
+
+.upload:has([disabled]) {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.upload:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.upload-preview-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	transition: all 0.25s;
+}
+
+.upload-preview {
+	position: relative;
+
+	width: 100%;
+	height: 200px;
+
+	border-radius: 100%;
+	border: 2.5px dashed var(--light-blue-2);
+	color: #ccc;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+
+	transition: all 0.25s;
 }
