@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<style>
+			html {
+				height: 100%;
+				width: 100%;
+				position: relative; /* Set positioning context */
+			}
+
+			#polar {
+				color: #000000;
+				background-color: #f0f0e6;
+				width: 200px;
+				padding: 10px;
+				position: absolute;
+				top: 500px; /* Set y position */
+				left: 100px; /* Set x position */
+				border: 1px solid #949494;
+				border-radius: 2px;
+				display: inline-block;
+				box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+				position: relative;
+			}
+
+			.dot {
+				height: 15px;
+				width: 15px;
+				background-color: red;
+				border-radius: 50%;
+				position: absolute;
+				top: 0;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+
+			#oid {
+				color: #000000;
+				background-color: #f0f0e6;
+				width: 200px;
+				padding: 10px;
+				position: absolute;
+				top: 200px; /* Set y position */
+				left: 200px; /* Set x position */
+				border: 1px solid #949494;
+				border-radius: 2px;
+				display: inline-block;
+				box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+				position: relative;
+			}
+
+			#polaroid {
+				color: #000000;
+				background-color: #f0f0e6;
+				width: 200px;
+				padding: 10px;
+				position: absolute;
+				top: 300px; /* Set y position */
+				left: 300px; /* Set x position */
+				border: 1px solid #949494;
+				border-radius: 2px;
+				display: inline-block;
+				box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+				position: relative;
+			}
+
+			img {
+				display: block;
+				margin: 0 auto;
+				border: 1px solid black;
+				border-radius: 1px;
+				padding: -20px;
+			}
+
+			body {
+				background-image: url("https://th.bing.com/th/id/R.75967f4d217119771e2eda076752d0b8?rik=S%2b84OcL%2fu5NzVg&riu=http%3a%2f%2fnew.graphicpanic.com%2fwp-content%2fuploads%2f2015%2f06%2fbulletin-board-background.jpg&ehk=OoNDRoB3Zcqq50A3ugW%2bDZNqZHmqNEEWUAMxlIDtBPE%3d&risl=&pid=ImgRaw&r=0");
+				height: 100%; /* Keep body at full height */
+				margin: 0; /* Remove default margin */
+				padding: 0; /* Remove default padding */
+			}
+		</style>
+		<script>
+			function displayImage(input) {
+				if (input.files && input.files[0]) {
+					const img = input.parentElement.querySelector("img");
+					img.onload = () => {
+						URL.revokeObjectURL(img.src); // Free memory
+					};
+					img.src = URL.createObjectURL(input.files[0]); // Set src to blob URL
+				}
+			}
+		</script>
+		<script src="script.js"></script>
+		<link rel="stylesheet" href="style.css" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Image Upload and Display</title>
+	</head>
+	<body>
+		<!-- 1st box -->
+		<div id="polar">
+			<div class="dot" style="top: -7.5px"></div>
+			<input type="file" accept=".jpg, .png" onchange="displayImage(this)" />
+			<br />
+			<img id="myImg" src="#" alt="Your image" height="100%" width="100%" />
+		</div>
+
+		<!-- 2nd box -->
+		<div id="oid">
+			<div class="dot" style="top: -7.5px"></div>
+			<input type="file" accept=".jpg, .png" onchange="displayImage(this)" />
+			<br />
+			<img id="myImg" src="#" alt="Your image" height="100%" width="100%" />
+		</div>
+
+		<!-- 3nd box -->
+		<div id="polaroid">
+			<div class="dot" style="top: -7.5px"></div>
+			<input type="file" accept=".jpg, .png" onchange="displayImage(this)" />
+
+			++
+			<br />
+			<img id="myImg" src="#" alt="Your image" height="100%" width="100%" />
+		</div>
+	</body>
+</html>
