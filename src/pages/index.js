@@ -2,6 +2,8 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "@/styles/Home.module.css";
 
+import { FaPlus } from "react-icons/fa6";
+
 export default function Home() {
 	return (
 		<>
@@ -36,7 +38,22 @@ export default function Home() {
 					</div>
 				))}
 			</div>
-			<button className={styles.addButton}>+</button>
+			<div className={styles.addButton}>
+				<button
+					style={{
+						all: "unset",
+					}}
+				>
+					<FaPlus
+						className={styles.addButtonIco}
+						//onClick={() => setContentVisible(true)}
+						style={{
+							// pointerEvents: "all",
+							marginRight: "5px",
+						}}
+					/>
+				</button>
+			</div>
 		</>
 	);
 }
