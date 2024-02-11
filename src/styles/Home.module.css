@@ -130,6 +130,7 @@
 	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 	position: relative;
 	text-align: center;
+	font-family: "Reenie Beanie", cursive;
 }
 
 .dot {

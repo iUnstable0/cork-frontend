@@ -3,12 +3,18 @@ import Image from "next/image";
 import styles from "@/styles/Home.module.css";
 import Toaster from "@/components/toaster";
 
+import crypto from "crypto";
+
 import { toast } from "react-hot-toast";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 
 import LoadingButton from "@mui/lab/LoadingButton";
+
+// import Socket from "@/components/socket";
+
+import lib_file from "@iunstable0/website-libs/build/file";
 
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,8 +25,9 @@ import Blur from "@/components/blur";
 import formStyles from "@/styles/form.module.scss";
 
 import lib_axios from "@iunstable0/server-libs/build/axios";
+import lib_toaster from "@iunstable0/website-libs/build/toaster";
 
-import { UilUpload } from "@iconscout/react-unicons";
+import { UilUpload, UilText, UilAlignLeft } from "@iconscout/react-unicons";
 
 import Cropper from "react-easy-crop";
 
@@ -35,7 +42,7 @@ export async function getServerSideProps(context) {
 	return lib_axios
 		.request({
 			method: "GET",
-			baseURL: `http://localhost:3000/gallery`,
+			baseURL: `http://127.0.0.1:3000/gallery`,
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -69,6 +76,113 @@ export default function Home({ gallery }) {
 		[uploadBtnLoading, setUploadBtnLoading] = useState(false);
 
 	const uploadFileRef = useRef(null);
+	const descInputRef = useRef(null);
+	const titleInputRef = useRef(null);
+
+	const toastUploadProcess = {
+		loading: "Uploading",
+		success: () => {
+			// const data = response.data;
+
+			setAcceptedFiles([]);
+
+			setUploadBtnLoading(false);
+			setUploadVisible(false);
+
+			return "Uploaded";
+		},
+		error: (error) => {
+			setUploadBtnLoading(false);
+
+			return lib_toaster.multiToast("error", lib_axios.parseError(error));
+		},
+	};
+
+	const submit = async () => {
+		setUploadBtnLoading(true);
+
+		uploadPicture();
+	};
+
+	const uploadPicture = () => {
+		toast.loading("Preparing to upload", {
+			id: "preparingUpload",
+		});
+
+		// if (process.env.NEXT_PUBLIC_S3_UPLOAD_TYPE === "2") {
+		// 	toast.dismiss("preparingUploadProfilePicture");
+
+		// 	const formData = new FormData();
+
+		// 	formData.append("file", acceptedFiles[0]);
+		// 	formData.append("data", JSON.stringify({ cropArea, zoom: zoom, info: acceptedFiles[0] }));
+
+		// 	toast.promise(
+		// 		lib_axios.request({
+		// 			method: "POST",
+		// 			url: "/users/change-profile-picture",
+		// 			baseURL: process.env.NEXT_PUBLIC_FASTIFY_PUBLIC_URL,
+		// 			data: formData,
+		// 			headers: {
+		// 				"Content-Type": "multipart/form-data",
+		// 				Authorization: `Bearer ${getCookie("token")}`,
+		// 			},
+		// 		}),
+		// 		{
+		// 			loading: "Uploading",
+		// 			success: (response: any) => {
+		// 				const data = response.data;
+
+		// 				return "Uploaded";
+		// 			},
+		// 			error: (error: any) => {
+		// 				return lib_toaster.multiToast("error", lib_axios.parseError(error));
+		// 			},
+		// 		}
+		// 	);
+		// } else {
+
+		const fileBlobURL = URL.createObjectURL(acceptedFiles[0]);
+
+		fetch(fileBlobURL)
+			.then((response) => response.blob())
+			.then(async (fileBlob) => {
+				lib_file.getFileBuffer(fileBlob).then((fileBuffer) => {
+					const fileMD5 = crypto
+						.createHash("md5")
+						.update(fileBuffer)
+						.digest("base64");
+
+					toast.dismiss("preparingUpload");
+
+					toast.promise(
+						lib_axios.request({
+							method: "POST",
+							baseURL: "http://10.11.21.137:3000/upload",
+							headers: {
+								// "Content-Type": "multipart/form-data"
+							},
+							data: {
+								file: fileBuffer.toString("base64"),
+								fileInfo: {
+									hash: fileMD5,
+									cropArea,
+								},
+								title: inputData.title,
+								description: inputData.desc,
+							},
+						}),
+						toastUploadProcess
+					);
+				});
+			})
+			.catch((error) =>
+				toast.error(error.toString(), {
+					id: "preparingUploadProfilePicture",
+				})
+			);
+		// }
+	};
 
 	const allowedExtensions = [".png", ".jpg", ".jpeg"];
 
@@ -151,6 +265,23 @@ export default function Home({ gallery }) {
 		},
 	});
 
+	const [inputData, setInputData] = useState({});
+
+	const saveInput = (input, value) => {
+		let data = inputData;
+
+		data[input] = value;
+
+		setInputData(data);
+	};
+
+	// Socket({
+	// 	channel: `new-images`,
+	// 	onUpdate: async (data) => {
+	// 		console.log("NEW DAAA", data);
+	// 	},
+	// });
+
 	return (
 		<>
 			<Head>
@@ -188,8 +319,8 @@ export default function Home({ gallery }) {
 					<div
 						className={formStyles.container}
 						style={{
-							minHeight: uploadPage1Visible ? "250px" : "400px",
-							maxHeight: uploadPage1Visible ? "250px" : "400px",
+							minHeight: uploadPage1Visible ? "250px" : "500px",
+							maxHeight: uploadPage1Visible ? "250px" : "500px",
 							minWidth: "305px",
 							maxWidth: "305px",
 						}}
@@ -254,7 +385,7 @@ export default function Home({ gallery }) {
 
 						{uploadPage === 2 && uploadPage2Visible && (
 							<motion.div
-								className={styles["upload-ctn"]}
+								// className={styles["upload-ctn"]}
 								key={`cpf_${uploadPage}`}
 								initial={{
 									opacity: 0,
@@ -283,12 +414,16 @@ export default function Home({ gallery }) {
 											priority={true}
 										/> */}
 										<Cropper
-											image={URL.createObjectURL(acceptedFiles[0])}
+											image={
+												(acceptedFiles.length > 0 &&
+													URL.createObjectURL(acceptedFiles[0])) ||
+												""
+											}
 											crop={crop}
 											zoom={zoom}
-											cropShape="round"
+											cropShape="square"
 											// aspect={1 / 1}
-											aspect={1}
+											aspect={3 / 4}
 											onCropChange={setCrop}
 											onCropComplete={onCropComplete}
 											// onCropAreaChange={onCropComplete}
@@ -296,11 +431,49 @@ export default function Home({ gallery }) {
 										/>
 									</div>
 
+									<br />
+
+									<div className={formStyles["input-field"]}>
+										<input
+											className={formStyles.input}
+											type="text"
+											autoComplete="none"
+											placeholder="Title"
+											required
+											onChange={(event) => {
+												const title = event.target.value;
+
+												saveInput("title", title);
+											}}
+											ref={titleInputRef}
+										/>
+
+										<UilText className={formStyles["input-icon"]} />
+									</div>
+
+									<div className={formStyles["input-field"]}>
+										<input
+											className={formStyles.input}
+											type="text"
+											autoComplete="none"
+											placeholder="Breif Description"
+											required
+											onChange={(event) => {
+												const desc = event.target.value;
+
+												saveInput("desc", desc);
+											}}
+											ref={descInputRef}
+										/>
+
+										<UilAlignLeft className={formStyles["input-icon"]} />
+									</div>
+
 									<LoadingButton
 										className={formStyles["submit-button"]}
-										loading={submitButtonLoading}
+										loading={uploadBtnLoading}
 										variant="contained"
-										disabled={!submitButtonLoading && submitButtonDisabled}
+										disabled={!uploadBtnLoading && uploadBtnDisabled}
 										sx={{
 											textTransform: "none",
 											fontWeight: "normal",
@@ -315,7 +488,7 @@ export default function Home({ gallery }) {
 											submit();
 										}}
 									>
-										{!submitButtonLoading && submitButtonValue}
+										{!uploadBtnLoading && uploadBtnValue}
 									</LoadingButton>
 
 									<motion.div
@@ -338,7 +511,7 @@ export default function Home({ gallery }) {
 												className={formStyles.link}
 												type="button"
 												onClick={() => setAcceptedFiles([])}
-												disabled={submitButtonLoading}
+												disabled={uploadBtnLoading}
 											>
 												{"<"} Go back
 											</button>
@@ -354,6 +527,7 @@ export default function Home({ gallery }) {
 			<AnimatePresence>
 				{polaroidDetailsVisible && (
 					<motion.div
+						className={styles["content"]}
 						style={{
 							zIndex: 103,
 							position: "absolute",
@@ -361,8 +535,8 @@ export default function Home({ gallery }) {
 							backgroundColor: "white",
 							textAlign: "center",
 							transform: `rotateY(${polaroidFlipped ? 180 : 0}deg)`, // Apply flip if polaroidFlipped is true
-							height: "20rem",
-							width: "20rem",
+							height: "450px",
+							width: "320px",
 							top: 0,
 							left: 0,
 							right: 0,
@@ -386,13 +560,33 @@ export default function Home({ gallery }) {
 						onClick={() => setPolaroidFlipped(!polaroidFlipped)}
 					>
 						{polaroidFlipped ? (
-							<div style={{ transform: "rotateY(180deg)" }}>
-								<p>Hello</p>
+							<div
+								style={{
+									padding: "20px",
+									transform: "rotateY(180deg)",
+									textAlign: "left",
+								}}
+							>
+								<h1>{gallery[polaroidKey]["title"]}</h1>
+								<p>{gallery[polaroidKey]["description"]}</p>
 							</div>
 						) : (
 							<div>
-								<p>{gallery[polaroidKey]["title"]}</p>
-								<p>{gallery[polaroidKey]["description"]}</p>
+								<img
+									alt="Gallery Image"
+									className={styles.myImg}
+									src={`http://10.11.21.137:3000/${polaroidKey}-polaroid.png`}
+									height="400em"
+								/>
+								<p>
+									{(
+										new Date(parseInt(polaroidKey)).getUTCMonth() + 1
+									).toString() +
+										"/" +
+										new Date(parseInt(polaroidKey)).getUTCDate().toString() +
+										"/" +
+										new Date(parseInt(polaroidKey)).getUTCFullYear().toString()}
+								</p>
 							</div>
 						)}
 					</motion.div>
@@ -409,30 +603,40 @@ export default function Home({ gallery }) {
 			</div>
 			<div className={styles.scrollableContent}>
 				{Object.keys(gallery).map((key, i) => (
-					<div
+					<motion.div
+						whileHover={{ scale: 1.05 }} // Adjust the scale factor as needed
+						whileTap={{ scale: 1 }} // Adjust the scale factor as needed
 						key={i}
 						className={styles.content}
 						style={{
-							transform:
-								"rotate(" +
-								gallery[key]["frame_angle"].toString().split(".")[0] +
-								"deg)",
+							rotate:
+								gallery[key]["frame_angle"].toString().split(".")[0] + "deg",
+							// transform:
+							// 	"rotate(" +
+							// 	gallery[key]["frame_angle"].toString().split(".")[0] +
+							// 	"deg)",
 							margin: "5%",
 						}}
 						onClick={() => {
 							setPolaroidDetailsVisible(true);
+							setPolaroidFlipped(false);
 							setPolaroidKey(key);
 						}}
 					>
 						<img
 							alt="Gallery Image"
 							className={styles.myImg}
-							src={key + ".png"}
-							height=""
-							width=""
+							src={`http://10.11.21.137:3000/${key}-polaroid.png`}
+							height="260em"
 						/>
-						<p>{gallery[key]["title"]}</p>
-					</div>
+						<p>
+							{(new Date(parseInt(key)).getUTCMonth() + 1).toString() +
+								"/" +
+								new Date(parseInt(key)).getUTCDate().toString() +
+								"/" +
+								new Date(parseInt(key)).getUTCFullYear().toString()}
+						</p>
+					</motion.div>
 				))}
 			</div>
 			<div
