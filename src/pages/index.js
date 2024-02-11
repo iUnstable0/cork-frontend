@@ -456,7 +456,7 @@ export default function Home({ gallery }) {
 											className={formStyles.input}
 											type="text"
 											autoComplete="none"
-											placeholder="Breif Description"
+											placeholder="Brief Description"
 											required
 											onChange={(event) => {
 												const desc = event.target.value;
