@@ -4,6 +4,41 @@ import styles from "@/styles/Home.module.css";
 
 import { FaPlus } from "react-icons/fa6";
 
+import lib_axios from "@iunstable0/website-libs/build/axios";
+
+const getServerSideProps = async (context) => {
+	// console.log(
+	// 	lib_gql.combineQueries(
+	// 		lib_gqlSchema.query.getData,
+	// 		lib_gqlSchema.query.discordInfo,
+	// 	),
+	// );
+
+	return lib_axios
+		.request({
+			method: "GET",
+			baseURL: `http://localhost:3000/gallery`,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			data: {},
+		})
+		.then((response) => {
+			console.log(response.data.data);
+			return {
+				props: {
+					gallery: response.data.data.gallery,
+				},
+			};
+		})
+		.catch((error) => {
+			// console.log(error.response.data);
+			console.log(lib_axios.parseError(error));
+
+			return;
+		});
+};
+
 export default function Home() {
 	return (
 		<>
